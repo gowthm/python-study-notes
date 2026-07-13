@@ -1,0 +1,2 @@
+A regular function is like ordering 3 pizzas and waiting until all 3 arrive together. You get everything at once, but you had to wait for all of them to be made.
+A generator is like a pizza place that delivers one pizza at a time — you eat the first, then ask for the second, then the third. Slower feeling maybe, but the kitchen only makes one pizza at a time and never runs out of storage space, even if you ordered a million.

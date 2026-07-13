@@ -1,0 +1,235 @@
+<h2 class="sr-only">Side-by-side comparison showing a regular function running to completion versus a generator function pausing at each yield.</h2>
+
+<style>
+.cmp-wrap { padding: 1rem 0; }
+.cmp-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.cmp-btn { padding: 8px 16px; font-size: 13.5px; border: 0.5px solid var(--border-strong); background: var(--surface-2); border-radius: var(--radius); cursor: pointer; color: var(--text-primary); font-weight: 500; }
+.cmp-btn.primary { background: var(--bg-accent); color: var(--text-accent); border-color: var(--border-accent); }
+.cmp-btn:hover:not(:disabled) { background: var(--surface-1); }
+.cmp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cmp-narrator { background: var(--surface-1); border-radius: var(--radius); padding: 10px 14px; font-size: 13.5px; color: var(--text-primary); line-height: 1.55; min-height: 44px; margin-bottom: 1rem; }
+.cmp-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.cmp-side { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
+.cmp-side h3 { margin: 0 0 4px; font-size: 15px; font-weight: 500; color: var(--text-primary); }
+.cmp-subtitle { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.cmp-code { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.8; white-space: pre; margin-bottom: 12px; }
+.cmp-line { padding: 2px 8px; margin: 0 -8px; border-radius: 4px; transition: background 0.25s; }
+.cmp-line.active { background: var(--bg-accent); color: var(--text-accent); }
+.cmp-line.paused-here { background: var(--bg-warning); color: var(--text-warning); position: relative; }
+.cmp-line.paused-here::after { content: "⏸"; position: absolute; right: 10px; font-size: 12px; }
+.cmp-line.dim { opacity: 0.4; }
+.kw { color: #534AB7; }
+.num { color: #BA7517; }
+.cmt { color: var(--text-muted); font-style: italic; }
+.cmp-caller { background: var(--surface-1); border-radius: var(--radius); padding: 8px 10px; margin-bottom: 10px; font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; }
+.cmp-caller.highlight { background: var(--bg-accent); color: var(--text-accent); }
+.cmp-output-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+.cmp-output-box { background: var(--surface-1); border-radius: var(--radius); padding: 10px; min-height: 60px; font-family: var(--font-mono); font-size: 13px; }
+.cmp-return-value { padding: 4px 8px; background: var(--bg-success); color: var(--text-success); border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: 500; }
+.cmp-yield-value { padding: 3px 8px; background: var(--bg-accent); color: var(--text-accent); border-radius: 4px; display: inline-block; margin: 2px 4px 2px 0; font-weight: 500; }
+.cmp-yield-value.new { animation: cmpPop 0.5s ease-out; }
+@keyframes cmpPop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.cmp-status { font-size: 11px; padding: 3px 10px; border-radius: 999px; display: inline-block; font-weight: 500; }
+.cmp-status.idle { background: var(--surface-1); color: var(--text-secondary); }
+.cmp-status.running { background: var(--bg-accent); color: var(--text-accent); }
+.cmp-status.paused { background: var(--bg-warning); color: var(--text-warning); }
+.cmp-status.done { background: var(--bg-success); color: var(--text-success); }
+.cmp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+</style>
+
+<div class="cmp-wrap">
+
+  <div class="cmp-controls">
+    <button class="cmp-btn primary" id="cmp-step">▶ Step forward</button>
+    <button class="cmp-btn" id="cmp-reset">↻ Reset</button>
+    <span style="font-size: 13px; color: var(--text-secondary);">Step <span id="cmp-num">0</span></span>
+  </div>
+
+  <div class="cmp-narrator" id="cmp-narrator">Both functions have the same body. The only difference is one uses <code>return</code>, the other uses <code>yield</code>. Watch what that changes.</div>
+
+  <div class="cmp-split">
+
+    <div class="cmp-side">
+      <div class="cmp-header">
+        <h3>Regular function</h3>
+        <span class="cmp-status idle" id="reg-status">idle</span>
+      </div>
+      <div class="cmp-subtitle">Uses <code>return</code>. Runs top to bottom, once.</div>
+
+      <div class="cmp-caller" id="reg-caller">result = build_list(3)</div>
+
+<div class="cmp-code" id="reg-code"><div class="cmp-line" data-r="1"><span class="kw">def</span> build_list(limit):</div><div class="cmp-line" data-r="2">    result = []</div><div class="cmp-line" data-r="3">    current = <span class="num">0</span></div><div class="cmp-line" data-r="4">    <span class="kw">while</span> current &lt; limit:</div><div class="cmp-line" data-r="5">        current += <span class="num">1</span></div><div class="cmp-line" data-r="6">        result.append(current)</div><div class="cmp-line" data-r="7">    <span class="kw">return</span> result</div></div>
+
+      <div class="cmp-output-label">Locals during run</div>
+      <div class="cmp-output-box">
+        <div style="font-size: 12px;">current: <span id="reg-current" style="font-weight: 500;">—</span></div>
+        <div style="font-size: 12px; margin-top: 4px;">result: <span id="reg-result" style="font-weight: 500; font-family: var(--font-mono);">—</span></div>
+        <div id="reg-return" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <div class="cmp-side">
+      <div class="cmp-header">
+        <h3>Generator function</h3>
+        <span class="cmp-status idle" id="gen-status">idle</span>
+      </div>
+      <div class="cmp-subtitle">Uses <code>yield</code>. Runs a bit, pauses, resumes.</div>
+
+      <div class="cmp-caller" id="gen-caller">gen = build_gen(3)</div>
+
+<div class="cmp-code" id="gen-code"><div class="cmp-line" data-g="1"><span class="kw">def</span> build_gen(limit):</div><div class="cmp-line" data-g="2">    current = <span class="num">0</span></div><div class="cmp-line" data-g="3">    <span class="kw">while</span> current &lt; limit:</div><div class="cmp-line" data-g="4">        current += <span class="num">1</span></div><div class="cmp-line" data-g="5">        <span class="kw">yield</span> current</div><div class="cmp-line" data-g="6">    <span class="cmt"># end of function</span></div></div>
+
+      <div class="cmp-output-label">Locals (kept alive between calls)</div>
+      <div class="cmp-output-box">
+        <div style="font-size: 12px;">current: <span id="gen-current" style="font-weight: 500;">—</span></div>
+        <div id="gen-yields" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // Each step describes both sides. Regular function progresses linearly to completion,
+  // then just sits done. Generator progresses via successive next() calls.
+  const steps = [
+    {
+      note: "Nothing has run yet. On the left we're about to call <code>build_list(3)</code>. On the right we're about to call <code>build_gen(3)</code>.",
+      reg: { caller: "result = build_list(3)", callerHi: false, line: null, current: "—", result: "—", ret: "", status: "idle" },
+      gen: { caller: "gen = build_gen(3)", callerHi: false, line: null, paused: null, current: "—", yields: [], status: "idle" }
+    },
+    {
+      note: "<b>Left:</b> calling the function starts running its body immediately. <b>Right:</b> calling a generator function does NOT run the body — it just creates a paused generator object.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 1, current: "—", result: "—", ret: "", status: "running" },
+      gen: { caller: "gen = build_gen(3)  ← object created, body NOT run", callerHi: true, line: null, paused: null, current: "—", yields: [], status: "paused" }
+    },
+    {
+      note: "<b>Left:</b> keeps running — initializes the list. <b>Right:</b> still frozen. Nothing happens until someone calls <code>next(gen)</code>.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 2, current: "—", result: "[]", ret: "", status: "running" },
+      gen: { caller: "(still frozen, waiting for next())", callerHi: false, line: null, paused: null, current: "—", yields: [], status: "paused" }
+    },
+    {
+      note: "<b>Left:</b> sets <code>current = 0</code>, enters the loop. <b>Right:</b> now the caller does <code>next(gen)</code>. Body starts executing at the top.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 3, current: "0", result: "[]", ret: "", status: "running" },
+      gen: { caller: "next(gen)  ← call #1", callerHi: true, line: 2, paused: null, current: "0", yields: [], status: "running" }
+    },
+    {
+      note: "<b>Left:</b> loop body runs — increments and appends. <b>Right:</b> same code, but when it hits <code>yield</code> it will pause.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 6, current: "1", result: "[1]", ret: "", status: "running" },
+      gen: { caller: "next(gen)  ← call #1", callerHi: true, line: 4, paused: null, current: "1", yields: [], status: "running" }
+    },
+    {
+      note: "<b>Left:</b> keeps looping — no interruption. <b>Right:</b> hits <code>yield 1</code>. Hands <b>1</b> back to the caller and <b>freezes</b>. current=1 stays alive.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 6, current: "2", result: "[1, 2]", ret: "", status: "running" },
+      gen: { caller: "next(gen)  →  returns 1", callerHi: true, line: null, paused: 5, current: "1", yields: [1], status: "paused" }
+    },
+    {
+      note: "<b>Left:</b> still one big run — third loop iteration done. <b>Right:</b> nothing happens until caller runs <code>next(gen)</code> again.",
+      reg: { caller: "result = build_list(3)", callerHi: true, line: 6, current: "3", result: "[1, 2, 3]", ret: "", status: "running" },
+      gen: { caller: "(frozen at yield, waiting)", callerHi: false, line: null, paused: 5, current: "1", yields: [1], status: "paused" }
+    },
+    {
+      note: "<b>Left:</b> loop exits (3 &lt; 3 is false), <code>return</code> hands back the whole list at once. Done. <b>Right:</b> caller calls <code>next(gen)</code>. Resumes right after the yield.",
+      reg: { caller: "result = build_list(3)  →  returns [1, 2, 3]", callerHi: true, line: 7, current: "3", result: "[1, 2, 3]", ret: '<span class="cmp-return-value">returned [1, 2, 3] — all at once</span>', status: "done" },
+      gen: { caller: "next(gen)  ← call #2", callerHi: true, line: 3, paused: null, current: "1", yields: [1], status: "running" }
+    },
+    {
+      note: "<b>Left:</b> function is over. Its locals are gone. <b>Right:</b> generator yields <b>2</b> and pauses again. current=2 stays alive between calls.",
+      reg: { caller: "// done", callerHi: false, line: null, current: "gone", result: "gone", ret: '<span class="cmp-return-value">returned [1, 2, 3] — all at once</span>', status: "done" },
+      gen: { caller: "next(gen)  →  returns 2", callerHi: true, line: null, paused: 5, current: "2", yields: [1, 2], status: "paused" }
+    },
+    {
+      note: "<b>Right:</b> third <code>next(gen)</code>. Resumes, loops, yields <b>3</b>, pauses. Still no full list ever built — one value at a time.",
+      reg: { caller: "// done", callerHi: false, line: null, current: "gone", result: "gone", ret: '<span class="cmp-return-value">returned [1, 2, 3] — all at once</span>', status: "done" },
+      gen: { caller: "next(gen)  →  returns 3", callerHi: true, line: null, paused: 5, current: "3", yields: [1, 2, 3], status: "paused" }
+    },
+    {
+      note: "<b>Right:</b> fourth <code>next(gen)</code>. Loop condition fails (3 &lt; 3), function ends, Python raises <code>StopIteration</code>. Only now is the generator finished.",
+      reg: { caller: "// done", callerHi: false, line: null, current: "gone", result: "gone", ret: '<span class="cmp-return-value">returned [1, 2, 3] — all at once</span>', status: "done" },
+      gen: { caller: "next(gen)  →  raises StopIteration", callerHi: true, line: 6, paused: null, current: "3", yields: [1, 2, 3], status: "done" }
+    }
+  ];
+
+  let idx = 0;
+  const stepBtn = document.getElementById('cmp-step');
+  const resetBtn = document.getElementById('cmp-reset');
+  const narrator = document.getElementById('cmp-narrator');
+  const num = document.getElementById('cmp-num');
+  const regCaller = document.getElementById('reg-caller');
+  const genCaller = document.getElementById('gen-caller');
+  const regStatus = document.getElementById('reg-status');
+  const genStatus = document.getElementById('gen-status');
+  const regCurrent = document.getElementById('reg-current');
+  const regResult = document.getElementById('reg-result');
+  const regReturn = document.getElementById('reg-return');
+  const genCurrent = document.getElementById('gen-current');
+  const genYields = document.getElementById('gen-yields');
+  const regLines = document.querySelectorAll('#reg-code .cmp-line');
+  const genLines = document.querySelectorAll('#gen-code .cmp-line');
+
+  function render(prevYields) {
+    const s = steps[idx];
+    narrator.innerHTML = s.note;
+    num.textContent = String(idx);
+
+    regCaller.textContent = s.reg.caller;
+    regCaller.classList.toggle('highlight', s.reg.callerHi);
+    genCaller.textContent = s.gen.caller;
+    genCaller.classList.toggle('highlight', s.gen.callerHi);
+
+    regStatus.textContent = s.reg.status;
+    regStatus.className = 'cmp-status ' + s.reg.status;
+    genStatus.textContent = s.gen.status;
+    genStatus.className = 'cmp-status ' + s.gen.status;
+
+    regCurrent.textContent = s.reg.current;
+    regResult.textContent = s.reg.result;
+    regReturn.innerHTML = s.reg.ret;
+    genCurrent.textContent = s.gen.current;
+
+    regLines.forEach(l => l.classList.remove('active', 'paused-here', 'dim'));
+    if (s.reg.status === 'done') {
+      regLines.forEach(l => l.classList.add('dim'));
+    }
+    if (s.reg.line) {
+      const el = document.querySelector('#reg-code .cmp-line[data-r="' + s.reg.line + '"]');
+      if (el) { el.classList.remove('dim'); el.classList.add('active'); }
+    }
+
+    genLines.forEach(l => l.classList.remove('active', 'paused-here'));
+    if (s.gen.line) {
+      const el = document.querySelector('#gen-code .cmp-line[data-g="' + s.gen.line + '"]');
+      if (el) el.classList.add('active');
+    }
+    if (s.gen.paused) {
+      const el = document.querySelector('#gen-code .cmp-line[data-g="' + s.gen.paused + '"]');
+      if (el) el.classList.add('paused-here');
+    }
+
+    if (s.gen.yields.length === 0) {
+      genYields.innerHTML = '<span style="color: var(--text-muted); font-size: 12px;">no yields yet</span>';
+    } else {
+      genYields.innerHTML = '<div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">yielded so far:</div>' +
+        s.gen.yields.map((v, i) => {
+          const isNew = prevYields && i >= prevYields.length;
+          return '<span class="cmp-yield-value' + (isNew ? ' new' : '') + '">' + v + '</span>';
+        }).join('');
+    }
+
+    stepBtn.disabled = idx >= steps.length - 1;
+    stepBtn.textContent = idx >= steps.length - 1 ? '✓ Finished' : '▶ Step forward';
+  }
+
+  stepBtn.addEventListener('click', () => {
+    if (idx < steps.length - 1) {
+      const prev = steps[idx].gen.yields;
+      idx += 1;
+      render(prev);
+    }
+  });
+  resetBtn.addEventListener('click', () => { idx = 0; render([]); });
+  render([]);
+})();
+</script>
