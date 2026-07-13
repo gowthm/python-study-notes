@@ -27,7 +27,7 @@ To master Python loops, it is essential to distinguish between these two concept
 
 ---
 
-## 📂 Example Scripts
+## 📂 Example Scripts & Comparisons
 
 ### 1. Custom Iterator Class
 * **File**: [count_up_to.py](file:///d:/python/python-study-notes/iterators/count_up_to.py)
@@ -59,3 +59,13 @@ When you write a loop like `for x in something:`, Python executes the following 
 1. **Obtains an Iterator**: It calls `iterator = iter(something)` (which internally calls `something.__iter__()`).
 2. **Retrieves Items**: It repeatedly calls `next(iterator)` (which internally calls `iterator.__next__()`) and assigns the result to `x`.
 3. **Catches StopIteration**: When the iterator runs out of elements, it raises `StopIteration`. The `for` loop catches this exception and exits gracefully without raising any errors.
+
+---
+
+## 🎯 Summary Comparison (In a nutshell)
+
+> [!IMPORTANT]
+> **The Three Patterns in One Sentence Each:**
+> * 🏃‍♂️ **Regular function**: Runs from top to bottom in one shot and hands back the whole result at the end.
+> * 🛠️ **Iterator class**: A hand-built object with `__iter__` and `__next__` methods; you write all the state management yourself.
+> * ⚡ **Generator function**: Looks like a regular function but has `yield` in it; Python automatically turns it into an iterator that pauses and resumes.

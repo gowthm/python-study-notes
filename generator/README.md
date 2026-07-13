@@ -13,12 +13,21 @@ A **Generator** is a special type of function in Python that returns an iterator
 
 ---
 
-## 📂 Visualizing Generators
+## 📂 Example Scripts & Visualizers
 
-This directory includes a side-by-side interactive visual comparison between a regular function and a generator function:
+This directory includes comparisons between regular functions, iterator classes, and generator functions:
 
-* **Comparison File**: [regular_function_vs_generator_comparison.html](file:///d:/python/python-study-notes/generator/regular_function_vs_generator_comparison.html)
+### 1. Side-by-Side Step Visualizer
+* **Visualizer File**: [regular_function_vs_generator_comparison.html](file:///d:/python/python-study-notes/generator/regular_function_vs_generator_comparison.html)
 * **Description**: An interactive webpage showing how a regular function runs to completion immediately (with variables lost afterwards), while a generator pauses at each `yield` step, keeping its local state alive between calls.
+
+### 2. Three-Way Code Comparison
+* **Script File**: [regular_generator_iterator.py](file:///d:/python/python-study-notes/generator/regular_generator_iterator.py)
+* **Description**: A Python script illustrating how to solve the same task (generating even numbers) using a regular list builder, a manual iterator class, and a generator function.
+
+### 3. Three-Way Interactive Dashboard
+* **Dashboard File**: [regular_vs_iterator_vs_generator.html](file:///d:/python/python-study-notes/generator/regular_vs_iterator_vs_generator.html)
+* **Description**: An interactive dashboard showing side-by-side execution mechanics, memory complexity, and situations when to choose each pattern.
 
 ---
 
@@ -26,3 +35,13 @@ This directory includes a side-by-side interactive visual comparison between a r
 
 1. **Memory Efficiency**: Since elements are yielded one-by-one, generators do not need to store the entire collection in memory. This is critical when working with large datasets or infinite streams.
 2. **State Preservation**: When a generator yields a value, the execution is suspended, and the values of local variables are saved. When `next()` is called again, execution resumes immediately after the `yield` statement.
+
+---
+
+## 🎯 Summary Comparison (In a nutshell)
+
+> [!IMPORTANT]
+> **The Three Patterns in One Sentence Each:**
+> * 🏃‍♂️ **Regular function**: Runs from top to bottom in one shot and hands back the whole result at the end.
+> * 🛠️ **Iterator class**: A hand-built object with `__iter__` and `__next__` methods; you write all the state management yourself.
+> * ⚡ **Generator function**: Looks like a regular function but has `yield` in it; Python automatically turns it into an iterator that pauses and resumes.

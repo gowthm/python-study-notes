@@ -1,0 +1,320 @@
+<h2 class="sr-only">Three-way comparison of regular functions, iterator classes, and generator functions in Python.</h2>
+
+<style>
+.tri-wrap { padding: 1rem 0; }
+.tri-scenario { background: var(--surface-1); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.tri-scenario-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.tri-scenario-body { font-family: var(--font-mono); font-size: 13.5px; color: var(--text-primary); }
+
+.tri-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.tri-card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; }
+.tri-card.regular { border-top: 2px solid #378ADD; border-radius: 12px; }
+.tri-card.iterator { border-top: 2px solid #7F77DD; border-radius: 12px; }
+.tri-card.generator { border-top: 2px solid #1D9E75; border-radius: 12px; }
+.tri-card-header { margin-bottom: 8px; }
+.tri-card-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+.tri-card-sub { font-size: 11.5px; color: var(--text-secondary); }
+.tri-code { font-family: var(--font-mono); font-size: 11px; line-height: 1.55; white-space: pre; background: var(--surface-1); padding: 8px 10px; border-radius: var(--radius); margin-bottom: 10px; overflow-x: auto; min-height: 160px; }
+.kw { color: #534AB7; }
+.num { color: #BA7517; }
+.cmt { color: var(--text-muted); font-style: italic; }
+
+.tri-attrs { display: flex; flex-direction: column; gap: 4px; margin-top: auto; }
+.tri-attr { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11.5px; border-top: 0.5px solid var(--border); }
+.tri-attr:first-child { border-top: none; }
+.tri-attr-label { color: var(--text-secondary); }
+.tri-attr-value { font-weight: 500; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+.dot.good { background: #1D9E75; }
+.dot.ok { background: #EF9F27; }
+.dot.bad { background: #E24B4A; }
+
+.tri-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.tri-tab { padding: 6px 12px; font-size: 12.5px; border: 0.5px solid var(--border-strong); background: transparent; border-radius: var(--radius); cursor: pointer; color: var(--text-primary); }
+.tri-tab:hover { background: var(--surface-1); }
+.tri-tab.active { background: var(--bg-accent); color: var(--text-accent); border-color: var(--border-accent); }
+
+.tri-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tri-table th { text-align: left; padding: 10px 8px; font-weight: 500; color: var(--text-secondary); border-bottom: 0.5px solid var(--border-strong); font-size: 12px; }
+.tri-table th:first-child { color: var(--text-primary); }
+.tri-table td { padding: 10px 8px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
+.tri-table td:first-child { color: var(--text-secondary); font-size: 12.5px; width: 34%; }
+.tri-table tr:last-child td { border-bottom: none; }
+.tri-panel { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
+</style>
+
+<div class="tri-wrap">
+
+  <div class="tri-scenario">
+    <div class="tri-scenario-title">Same task, three ways</div>
+    <div class="tri-scenario-body">Produce the numbers 1, 2, 3, ..., n</div>
+  </div>
+
+  <div class="tri-grid">
+
+    <div class="tri-card regular">
+      <div class="tri-card-header">
+        <div class="tri-card-title">Regular function</div>
+        <div class="tri-card-sub">Uses <code>return</code></div>
+      </div>
+<div class="tri-code"><span class="kw">def</span> count_up_to(n):
+    result = []
+    i = <span class="num">0</span>
+    <span class="kw">while</span> i &lt; n:
+        i += <span class="num">1</span>
+        result.append(i)
+    <span class="kw">return</span> result
+
+<span class="cmt"># call once, get all</span>
+nums = count_up_to(<span class="num">3</span>)
+<span class="cmt"># nums = [1, 2, 3]</span></div>
+      <div class="tri-attrs">
+        <div class="tri-attr">
+          <span class="tri-attr-label">Runs</span>
+          <span class="tri-attr-value">All at once</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Memory</span>
+          <span class="tri-attr-value"><span class="dot bad"></span>Holds all n</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Code effort</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Low</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Infinite ok?</span>
+          <span class="tri-attr-value"><span class="dot bad"></span>No</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tri-card iterator">
+      <div class="tri-card-header">
+        <div class="tri-card-title">Iterator class</div>
+        <div class="tri-card-sub">Uses <code>__next__</code></div>
+      </div>
+<div class="tri-code"><span class="kw">class</span> CountUpTo:
+    <span class="kw">def</span> __init__(self, n):
+        self.n = n
+        self.i = <span class="num">0</span>
+    <span class="kw">def</span> __iter__(self):
+        <span class="kw">return</span> self
+    <span class="kw">def</span> __next__(self):
+        <span class="kw">if</span> self.i &gt;= self.n:
+            <span class="kw">raise</span> StopIteration
+        self.i += <span class="num">1</span>
+        <span class="kw">return</span> self.i</div>
+      <div class="tri-attrs">
+        <div class="tri-attr">
+          <span class="tri-attr-label">Runs</span>
+          <span class="tri-attr-value">One at a time</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Memory</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Tiny</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Code effort</span>
+          <span class="tri-attr-value"><span class="dot bad"></span>High</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Infinite ok?</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Yes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tri-card generator">
+      <div class="tri-card-header">
+        <div class="tri-card-title">Generator function</div>
+        <div class="tri-card-sub">Uses <code>yield</code></div>
+      </div>
+<div class="tri-code"><span class="kw">def</span> count_up_to(n):
+    i = <span class="num">0</span>
+    <span class="kw">while</span> i &lt; n:
+        i += <span class="num">1</span>
+        <span class="kw">yield</span> i
+
+
+<span class="cmt"># pauses at each yield</span>
+gen = count_up_to(<span class="num">3</span>)
+<span class="kw">for</span> x <span class="kw">in</span> gen:
+    print(x)  <span class="cmt"># 1, 2, 3</span></div>
+      <div class="tri-attrs">
+        <div class="tri-attr">
+          <span class="tri-attr-label">Runs</span>
+          <span class="tri-attr-value">One at a time</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Memory</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Tiny</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Code effort</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Low</span>
+        </div>
+        <div class="tri-attr">
+          <span class="tri-attr-label">Infinite ok?</span>
+          <span class="tri-attr-value"><span class="dot good"></span>Yes</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tri-panel">
+    <div class="tri-tabs">
+      <button class="tri-tab active" data-tab="mechanics">How it runs</button>
+      <button class="tri-tab" data-tab="memory">Memory</button>
+      <button class="tri-tab" data-tab="use">When to use</button>
+    </div>
+
+    <div id="tab-mechanics">
+      <table class="tri-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th style="color: #185FA5;">Regular</th>
+            <th style="color: #534AB7;">Iterator</th>
+            <th style="color: #0F6E56;">Generator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Calling it does what?</td>
+            <td>Runs body top to bottom</td>
+            <td>Creates object, no code runs</td>
+            <td>Creates paused generator</td>
+          </tr>
+          <tr>
+            <td>How values come out</td>
+            <td>All at once via <code>return</code></td>
+            <td>One at a time via <code>next()</code></td>
+            <td>One at a time via <code>next()</code></td>
+          </tr>
+          <tr>
+            <td>How it stops</td>
+            <td>Hits <code>return</code></td>
+            <td>You <code>raise StopIteration</code></td>
+            <td>Function ends, Python does it</td>
+          </tr>
+          <tr>
+            <td>State between calls</td>
+            <td>None (single run)</td>
+            <td>You manage with <code>self.*</code></td>
+            <td>Python freezes it for you</td>
+          </tr>
+          <tr>
+            <td>Lines of code</td>
+            <td>~7</td>
+            <td>~10</td>
+            <td>~5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-memory" style="display: none;">
+      <table class="tri-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th style="color: #185FA5;">Regular</th>
+            <th style="color: #534AB7;">Iterator</th>
+            <th style="color: #0F6E56;">Generator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Memory for n = 10</td>
+            <td>~350 bytes</td>
+            <td>~150 bytes</td>
+            <td>~200 bytes</td>
+          </tr>
+          <tr>
+            <td>Memory for n = 10 million</td>
+            <td style="color: var(--text-danger); font-weight: 500;">~280 MB</td>
+            <td style="color: var(--text-success); font-weight: 500;">~150 bytes</td>
+            <td style="color: var(--text-success); font-weight: 500;">~200 bytes</td>
+          </tr>
+          <tr>
+            <td>Can it handle infinite?</td>
+            <td>No (would exhaust RAM)</td>
+            <td>Yes</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>Numbers alive at once</td>
+            <td>All n of them</td>
+            <td>One</td>
+            <td>One</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-use" style="display: none;">
+      <table class="tri-table">
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>Best choice</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Small, fixed-size result (a few dozen items)</td>
+            <td style="color: #185FA5; font-weight: 500;">Regular</td>
+            <td>Simplest; caller gets a real list</td>
+          </tr>
+          <tr>
+            <td>Huge or infinite stream</td>
+            <td style="color: #0F6E56; font-weight: 500;">Generator</td>
+            <td>Lazy, tiny memory, shortest code</td>
+          </tr>
+          <tr>
+            <td>Reading a big file line by line</td>
+            <td style="color: #0F6E56; font-weight: 500;">Generator</td>
+            <td>Same reason</td>
+          </tr>
+          <tr>
+            <td>Need reset, peek, or extra methods on the iterator</td>
+            <td style="color: #534AB7; font-weight: 500;">Iterator class</td>
+            <td>You control the object's API</td>
+          </tr>
+          <tr>
+            <td>Need to inspect or modify iterator state from outside</td>
+            <td style="color: #534AB7; font-weight: 500;">Iterator class</td>
+            <td>Attributes are accessible; a generator's frame is not</td>
+          </tr>
+          <tr>
+            <td>90% of everyday "produce a sequence" tasks</td>
+            <td style="color: #0F6E56; font-weight: 500;">Generator</td>
+            <td>Best default in modern Python</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const tabs = document.querySelectorAll('.tri-tab');
+  const panels = {
+    mechanics: document.getElementById('tab-mechanics'),
+    memory: document.getElementById('tab-memory'),
+    use: document.getElementById('tab-use')
+  };
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      Object.values(panels).forEach(p => p.style.display = 'none');
+      panels[t.dataset.tab].style.display = '';
+    });
+  });
+})();
+</script>
