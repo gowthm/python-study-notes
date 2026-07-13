@@ -5,7 +5,7 @@ backend_lang.add('rust')
 backend_lang.remove('go')
 
 print("Back End:", backend_lang)
-print('front End:', frontend_lang)
+print('Front End:', frontend_lang)
 
 print("Intersection:", backend_lang.intersection(frontend_lang))
 print("Union:", backend_lang.union(frontend_lang))
