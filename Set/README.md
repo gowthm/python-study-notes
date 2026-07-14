@@ -13,7 +13,7 @@ Think of a set like a collection of items in a bag:
 Here is a guide to the study scripts contained in this directory:
 
 ### 1. Basic Set Methods and Operations
-* **File**: [set_methods.py](file:///d:/python/python-study-notes/Set/set_methods.py)
+* **File**: [set_methods.py](file:///d:/python/python-study-notes/set/set_methods.py)
 * **Description**: Shows how to initialize two sets (representing backend and frontend programming languages), add/remove items, and perform basic set operations.
 * **Key Concept**: Duplicate elements added to a set are silently ignored. Removing an item that does not exist using `.remove()` raises a `KeyError` (use `.discard()` to avoid this).
 

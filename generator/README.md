@@ -29,6 +29,10 @@ This directory includes comparisons between regular functions, iterator classes,
 * **Dashboard File**: [regular_vs_iterator_vs_generator.html](file:///d:/python/python-study-notes/generator/regular_vs_iterator_vs_generator.html)
 * **Description**: An interactive dashboard showing side-by-side execution mechanics, memory complexity, and situations when to choose each pattern.
 
+### 4. Basic Generator Script
+* **Script File**: [generator_basics.py](file:///d:/python/python-study-notes/generator/generator_basics.py)
+* **Description**: A basic demonstration showing how a generator is defined with `yield` and how to iterate over it using a `for` loop.
+
 ---
 
 ## ⚡ Benefits of Generators
