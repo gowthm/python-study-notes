@@ -10,7 +10,7 @@ Explore the different study folders below:
 
 | Topic | Description | Key Subconcepts | Documentation Link |
 | :--- | :--- | :--- | :---: |
-| **Functions** | Modularity and metadata preservation | TV Remote Analogy, `functools.wraps` | [View Guide](file:///d:/python/python-study-notes/functions/README.md) |
+| **Functions** | Modularity and metadata preservation | TV Remote Analogy, `functools.wraps` | [View Guide](file:///d:/python/python-study-notes/functools.wrap/README.md) |
 | **Decorators** | Extending functions without source edits | Rebinding (`hello = decorator(hello)`), wrappers, args flow | [View Guide](file:///d:/python/python-study-notes/decorators/README.md) |
 | **Context Managers** | Automated setup and cleanup operations | `with` block execution protocol, custom timers | [View Guide](file:///d:/python/python-study-notes/context_managers/README.md) |
 | **Dictionaries** | Hash-table based key-value collection | CRUD, `.get()` default value lookup, loops | [View Guide](file:///d:/python/python-study-notes/dict/README.md) |
