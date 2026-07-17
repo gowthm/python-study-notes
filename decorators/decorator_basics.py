@@ -5,8 +5,6 @@ def wrapper(func):
         
     return myinnerwrapper
 
-
-
 @wrapper
 def myfunc():
     print("This is from myfunc")
