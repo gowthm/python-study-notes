@@ -4,6 +4,24 @@ Object-Oriented Programming (OOP) is a programming paradigm that uses **classes*
 
 ---
 
+## 📂 Example Scripts & Guides
+
+This directory contains resources illustrating core Object-Oriented Programming (OOP) concepts in Python:
+
+### 1. Multiple Inheritance
+* **File**: [multiple_inheritance.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/multiple_inheritance.py)
+* **Description**: Demonstrates how a subclass can inherit from multiple parent classes (e.g., `Smartphone` inheriting from both `Camera` and `Phone`).
+
+### 2. Using `super()`
+* **File**: [super_method.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/super_method.py)
+* **Description**: Illustrates calling parent class constructors and methods using Python's built-in `super()` function.
+
+### 3. Method Resolution Order (MRO)
+* **Guide**: [method_resolution_order.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/method_resolution_order.md)
+* **Description**: Explains Python's MRO, the C3 Linearization algorithm, and how Python resolves the classic "Diamond Problem".
+
+---
+
 ## 🧱 The Constructor: `__init__()`
 
 The `__init__()` method is Python's constructor. It is automatically called when a new instance of a class is created, allowing you to initialize the object's attributes.
