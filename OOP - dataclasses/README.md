@@ -6,6 +6,24 @@ It is designed to eliminate boilerplate code when creating classes that primaril
 
 ---
 
+## 📂 Example Scripts & Guides
+
+This directory contains resources illustrating advanced object-oriented design and dataclass features in Python:
+
+### 1. Complete E-Commerce Example
+* **File**: [example.py](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/example.py)
+* **Description**: A practical script simulating products, customers, and orders using dataclasses, combined with abstract classes for payment processing.
+
+### 2. Abstract Classes & Interfaces
+* **Guide**: [abstract_classes.md](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/abstract_classes.md)
+* **Description**: Explains Python's `abc` module, defining abstract base classes, and enforcing interface contracts with `@abstractmethod`.
+
+### 3. TypeScript vs. Python Reference
+* **Guide**: [ts_vs_py.md](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/ts_vs_py.md)
+* **Description**: A side-by-side syntactic mapping of object-oriented concepts from TypeScript to Python.
+
+---
+
 ## ⚖️ Standard Class vs. Dataclass
 
 Here is a side-by-side comparison of creating a data-holding class.
