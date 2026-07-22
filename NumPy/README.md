@@ -136,3 +136,66 @@ Here is a list of some useful NumPy functions and method names, organized by cat
 - **Operations:** `choose`, `compress`, `cumprod`, `cumsum`, `inner`, `ndarray.fill`, `imag`, `prod`, `put`, `putmask`, `real`, `sum`
 - **Basic Statistics:** `cov`, `mean`, `std`, `var`
 - **Basic Linear Algebra:** `cross`, `dot`, `outer`, `linalg.svd`, `vdot`
+
+## 📡 Broadcasting Rules
+
+Broadcasting allows universal functions to deal in a meaningful way with inputs that do not have exactly the same shape.
+
+1. If all input arrays do not have the same number of dimensions, a `1` will be repeatedly prepended to the shapes of the smaller arrays until all the arrays have the same number of dimensions.
+2. Arrays with a size of 1 along a particular dimension act as if they had the size of the array with the largest shape along that dimension. The value of the array element is assumed to be the same along that dimension for the "broadcast" array.
+
+| A (shape) | B (shape) | Result (shape) |
+| --- | --- | --- |
+| 2d array: `5 x 4` | 1d array: `1` | 2d array: `5 x 4` |
+| 2d array: `5 x 4` | 1d array: `4` | 2d array: `5 x 4` |
+| 3d array: `15 x 3 x 5` | 3d array: `15 x 1 x 5` | 3d array: `15 x 3 x 5` |
+| 3d array: `15 x 3 x 5` | 2d array: `3 x 5` | 3d array: `15 x 3 x 5` |
+| 3d array: `15 x 3 x 5` | 2d array: `3 x 1` | 3d array: `15 x 3 x 5` |
+
+```python
+import numpy as np
+
+a = np.array([[ 0.0,  0.0,  0.0],
+              [10.0, 10.0, 10.0],
+              [20.0, 20.0, 20.0],
+              [30.0, 30.0, 30.0]])
+b = np.array([1.0, 2.0, 3.0])
+a + b
+
+b = np.array([1.0, 2.0, 3.0, 4.0])
+a + b
+# Traceback (most recent call last):
+# ValueError: operands could not be broadcast together with shapes (4,3) (4,)
+```
+
+![Broadcasting example 1](https://numpy.org/doc/stable/_images/broadcasting_1.png)
+![Broadcasting example 2](https://numpy.org/doc/stable/_images/broadcasting_2.png)
+![Broadcasting example 3](https://numpy.org/doc/stable/_images/broadcasting_3.png)
+![Broadcasting example 4](https://numpy.org/doc/stable/_images/broadcasting_4.png)
+
+### Example 1
+
+```python
+from numpy import array, argmin, sqrt, sum
+
+observation = array([111.0, 188.0])
+codes = array([[102.0, 203.0],
+               [132.0, 193.0],
+               [45.0, 155.0],
+               [57.0, 173.0]])
+
+diff = codes - observation
+dist = sqrt(sum(diff**2, axis=-1))
+argmin(dist)
+
+print(diff)
+print(dist)
+print(argmin)
+```
+
+### General Broadcasting Rules
+
+When operating on two arrays, NumPy compares their shapes element-wise. It starts with the trailing (i.e., rightmost) dimension and works its way left. Two dimensions are compatible when:
+
+- They are equal, or
+- One of them is `1`.

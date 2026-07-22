@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NumPy Core (ndarray) — Interactive Flow Graph</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#161923; --border:#2a2f3d; --text:#e6e8ef; --muted:#9aa1b2;
+    --accent:#5aa9ff;
+    --c-attr:#5aa9ff; --c-methods:#5ad1a0; --c-index:#f2b950; --c-memory:#c084fc; --c-ops:#ff6b8b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  #app{display:flex;flex-direction:column;height:100vh;}
+  header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);}
+  header h1{font-size:16px;margin:0;font-weight:600;white-space:nowrap;}
+  header h1 span{color:var(--muted);font-weight:400;}
+  #search{background:#0c0e14;border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:13px;width:240px;}
+  .btn{background:#1d212e;border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+  .btn:hover{background:#262b3b;}
+  #counter{font-size:12px;color:var(--muted);white-space:nowrap;}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-left:auto;}
+  .legend-item{display:flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  main{flex:1;display:flex;min-height:0;}
+  #chart-wrap{flex:1;position:relative;overflow:hidden;background:
+      radial-gradient(circle at 1px 1px, #1c2030 1px, transparent 0) 0 0/22px 22px, var(--bg);}
+  svg{width:100%;height:100%;cursor:grab;}
+  svg:active{cursor:grabbing;}
+  .link{fill:none;stroke:#3a4155;stroke-width:1.4px;}
+  .node circle{stroke-width:1.5px;cursor:pointer;}
+  .node text{font-size:12px;cursor:pointer;paint-order:stroke;stroke:var(--bg);stroke-width:3px;}
+  .node .desc-hint{font-size:10px;fill:var(--muted);stroke:none;}
+  .node.match circle{stroke:#fff700;stroke-width:3px;}
+  #side{width:320px;border-left:1px solid var(--border);background:var(--panel);padding:16px;overflow-y:auto;flex-shrink:0;}
+  #side h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 10px;}
+  #detail-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:600;margin-bottom:8px;word-break:break-word;}
+  #detail-desc{font-size:13px;line-height:1.55;color:#cfd3e0;}
+  #detail-path{font-size:11px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);word-break:break-word;}
+  footer{padding:8px 18px;border-top:1px solid var(--border);background:var(--panel);font-size:11px;color:var(--muted);}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#2a2f3d;border-radius:4px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>NumPy Core <span>— ndarray: attributes · methods · indexing · memory · operators</span></h1>
+    <input id="search" type="text" placeholder="Search e.g. reshape, strides, broadcasting..."/>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse to overview</button>
+    <button class="btn" id="fit">Fit view</button>
+    <span id="counter"></span>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--c-attr)"></span>Attributes</span>
+      <span class="legend-item"><span class="dot" style="background:var(--c-methods)"></span>Methods</span>
+      <span class="legend-item"><span class="dot" style="background:var(--c-index)"></span>Indexing</span>
+      <span class="legend-item"><span class="dot" style="background:var(--c-memory)"></span>Memory Model</span>
+      <span class="legend-item"><span class="dot" style="background:var(--c-ops)"></span>Operators</span>
+    </div>
+  </header>
+  <main>
+    <div id="chart-wrap"><svg id="chart"></svg></div>
+    <div id="side">
+      <h2>Details</h2>
+      <div id="detail-name">numpy.ndarray</div>
+      <div id="detail-desc">Click or hover any node to see its description here. Click a node to expand or collapse its children.</div>
+      <div id="detail-path"></div>
+    </div>
+  </main>
+  <footer>Scroll / pinch to zoom, drag background to pan, click a node to expand or collapse. All 229 names in this graph were verified against a live NumPy install (not written from memory) — see the accompanying guide for the introspection method.</footer>
+</div>
+
+<script>
+const DATA = {"name": "numpy.ndarray \u2014 Core", "desc": "NumPy's fundamental object: a fixed-type, N-dimensional array. Click any node to expand/collapse.", "children": [{"name": "Attributes", "desc": "Read-only (mostly) properties describing the array \u2014 no computation involved.", "children": [{"name": "shape", "desc": "Tuple of array dimensions, e.g. (3, 4) for 3 rows x 4 columns."}, {"name": "ndim", "desc": "Number of dimensions (axes) \u2014 len(arr.shape)."}, {"name": "size", "desc": "Total number of elements in the array (product of shape)."}, {"name": "dtype", "desc": "The single data type shared by every element (e.g. int64, float32)."}, {"name": "itemsize", "desc": "Number of bytes used to store one element."}, {"name": "nbytes", "desc": "Total bytes used by all elements: size x itemsize."}, {"name": "strides", "desc": "Bytes to skip in memory to move one step along each axis."}, {"name": "flags", "desc": "Memory-layout info object (contiguity, ownership, writeability)."}, {"name": "data", "desc": "Raw buffer object pointing at the array's memory."}, {"name": "base", "desc": "The object that owns the memory, if this array is a view; None if it owns its own data."}, {"name": "T", "desc": "View of the array with axes reversed (transpose); for 2D, swaps rows/columns."}, {"name": "mT", "desc": "Matrix-transpose view: transposes only the last two axes, batch-safe for stacks of matrices."}, {"name": "real", "desc": "The real part of the elements (equals the array itself for non-complex dtypes)."}, {"name": "imag", "desc": "The imaginary part of the elements (all zeros for non-complex dtypes)."}, {"name": "flat", "desc": "A 1-D iterator that walks every element in row-major order, regardless of shape."}, {"name": "ctypes", "desc": "Helper object for passing the array's memory to ctypes-based C code."}, {"name": "device", "desc": "Which device the array lives on; always 'cpu' for NumPy (part of the Array API standard)."}]}, {"name": "Methods", "desc": "Callable behavior attached to every array, grouped by purpose.", "children": [{"name": "Type & Conversion", "desc": "Turn the array into another representation.", "children": [{"name": "astype(dtype)", "desc": "Return a copy converted to a new dtype."}, {"name": "copy()", "desc": "Return a full independent copy of the array's data."}, {"name": "view([dtype])", "desc": "Return a new array header over the SAME memory, optionally reinterpreted as another dtype."}, {"name": "fill(value)", "desc": "Set every element to the given value, in place."}, {"name": "tolist()", "desc": "Convert to a nested Python list (no more NumPy types)."}, {"name": "tobytes()", "desc": "Return the raw memory as a Python bytes object."}, {"name": "tofile(fid)", "desc": "Write array data to a file as raw bytes or text."}, {"name": "dump(file)", "desc": "Pickle the array directly to a file."}, {"name": "dumps()", "desc": "Pickle the array to a bytes string."}, {"name": "tostring()", "desc": "Deprecated alias of tobytes() \u2014 use tobytes() instead."}, {"name": "getfield(dtype, offset=0)", "desc": "Read a sub-field out of a structured/compound dtype element."}, {"name": "setfield(val, dtype, offset=0)", "desc": "Write a value into a sub-field of a structured dtype element."}, {"name": "item(*args)", "desc": "Return a single element as a plain Python scalar (not a NumPy type)."}]}, {"name": "Shape Manipulation", "desc": "Change the array's shape/axis order without changing its data.", "children": [{"name": "reshape(shape)", "desc": "Return the same data arranged into a new shape (view when possible)."}, {"name": "resize(new_shape)", "desc": "Change the array's shape in place, padding or truncating data as needed."}, {"name": "flatten()", "desc": "Return a 1-D COPY of all elements in row-major order."}, {"name": "ravel()", "desc": "Return a 1-D view (when possible) of all elements \u2014 like flatten() but avoids copying."}, {"name": "transpose(*axes)", "desc": "Return a view with axes permuted (generalized version of .T)."}, {"name": "swapaxes(axis1, axis2)", "desc": "Return a view with two specific axes swapped."}, {"name": "squeeze(axis=None)", "desc": "Remove axes of length 1 from the shape."}]}, {"name": "Item Selection & Ordering", "desc": "Pick out, reorder, or sort elements.", "children": [{"name": "take(indices)", "desc": "Fetch elements at the given flat/axis positions."}, {"name": "put(indices, values)", "desc": "Set elements at given positions to new values, in place."}, {"name": "repeat(repeats)", "desc": "Repeat each element a given number of times."}, {"name": "choose(choices)", "desc": "Build an array by picking, per-element, from a list of candidate arrays."}, {"name": "sort(axis=-1)", "desc": "Sort the array in place along an axis."}, {"name": "argsort(axis=-1)", "desc": "Return the INDICES that would sort the array, without sorting it."}, {"name": "partition(kth)", "desc": "Partially sort in place so the k-th element is in its final sorted position."}, {"name": "argpartition(kth)", "desc": "Like argsort(), but only guarantees the k-th position (faster)."}, {"name": "searchsorted(v)", "desc": "Find insertion points to keep a sorted array sorted."}, {"name": "nonzero()", "desc": "Return the indices of all non-zero elements, one array of indices per axis."}, {"name": "compress(condition)", "desc": "Select slices along an axis where condition is True (function form of boolean masking)."}, {"name": "diagonal(offset=0)", "desc": "Return the diagonal of a 2-D (or batched) array as a view."}]}, {"name": "Calculation & Reduction", "desc": "Compute a summary value (or one per axis) from the array.", "children": [{"name": "all(axis=None)", "desc": "True if every element is truthy (optionally per axis)."}, {"name": "any(axis=None)", "desc": "True if at least one element is truthy (optionally per axis)."}, {"name": "argmax(axis=None)", "desc": "Index of the largest element."}, {"name": "argmin(axis=None)", "desc": "Index of the smallest element."}, {"name": "max(axis=None)", "desc": "The largest value (optionally per axis)."}, {"name": "min(axis=None)", "desc": "The smallest value (optionally per axis)."}, {"name": "sum(axis=None)", "desc": "Add up all elements (optionally per axis)."}, {"name": "mean(axis=None)", "desc": "Arithmetic average of the elements."}, {"name": "std(axis=None)", "desc": "Standard deviation of the elements."}, {"name": "var(axis=None)", "desc": "Variance of the elements."}, {"name": "prod(axis=None)", "desc": "Multiply all elements together."}, {"name": "cumsum(axis=None)", "desc": "Running (cumulative) sum along an axis."}, {"name": "cumprod(axis=None)", "desc": "Running (cumulative) product along an axis."}, {"name": "clip(min, max)", "desc": "Limit values to a range \u2014 anything outside [min, max] is clamped."}, {"name": "round(decimals=0)", "desc": "Round each element to the given number of decimals."}, {"name": "trace(offset=0)", "desc": "Sum along a diagonal of a 2-D array."}, {"name": "dot(b)", "desc": "Matrix/dot product with another array \u2014 same as np.dot(arr, b)."}, {"name": "conj()", "desc": "Complex conjugate of every element."}, {"name": "conjugate()", "desc": "Identical to conj() \u2014 complex conjugate of every element."}]}, {"name": "Byte Order & Flags", "desc": "Low-level control over raw representation and memory flags.", "children": [{"name": "byteswap(inplace=False)", "desc": "Swap byte order (endianness) of each element's raw bytes."}, {"name": "setflags(write=None, align=None, uic=None)", "desc": "Manually change writeability/alignment memory flags."}]}, {"name": "Array Protocol / Interop", "desc": "Hooks that let arrays interoperate with subclasses, ufuncs, and other array libraries.", "children": [{"name": "__array__()", "desc": "Called by np.array()/np.asarray() to get a plain ndarray view \u2014 the hook that makes custom objects 'array-like'."}, {"name": "__array_finalize__(obj)", "desc": "Hook run when a new array is created from a view/template \u2014 used by subclasses to carry over extra attributes."}, {"name": "__array_wrap__(array)", "desc": "Hook that lets a subclass control how ufunc results are wrapped back into that subclass."}, {"name": "__array_ufunc__()", "desc": "Override point for how ufuncs (np.add, np.sin, ...) behave on a subclass or custom type."}, {"name": "__array_function__()", "desc": "Override point for how general NumPy functions (np.reshape, np.sum, ...) behave on a subclass."}, {"name": "__array_namespace__()", "desc": "Returns the Array-API-standard namespace for this array (interoperability with other array libraries)."}, {"name": "__dlpack__()", "desc": "Export the array via DLPack, a zero-copy exchange format used by PyTorch/TensorFlow/CuPy."}, {"name": "__dlpack_device__()", "desc": "Report which device (per DLPack's spec) the array's memory lives on."}, {"name": "to_device(device)", "desc": "Array-API-standard method to move an array to another device (no-op placeholder on NumPy, which is CPU-only)."}, {"name": "__class_getitem__(item)", "desc": "Enables generic-alias typing syntax like ndarray[Any, dtype[float64]]."}]}, {"name": "Removed in NumPy 2.0", "desc": "Old methods you may still see in tutorials/StackOverflow \u2014 no longer callable.", "children": [{"name": "ptp()  [removed in 2.0]", "desc": "Used to return max-min range. Removed from ndarray in NumPy 2.0 \u2014 use np.ptp(arr) instead."}, {"name": "itemset()  [removed in 2.0]", "desc": "Used to set a single element. Removed in NumPy 2.0 \u2014 use arr[index] = value instead."}, {"name": "newbyteorder()  [removed in 2.0]", "desc": "Used to return a byte-swapped view. Removed in NumPy 2.0 \u2014 use arr.view(arr.dtype.newbyteorder(order)) instead."}]}]}, {"name": "Indexing", "desc": "How you read and write specific elements or sub-arrays.", "children": [{"name": "Basic Indexing", "desc": "Single-element access by position.", "children": [{"name": "arr[0]", "desc": "Positive index \u2014 the first element (axis 0)."}, {"name": "arr[-1]", "desc": "Negative index \u2014 counts backward from the end; -1 is the last element."}, {"name": "arr[1, 2]", "desc": "Comma-separated indices address multiple axes at once: row 1, column 2."}]}, {"name": "Slicing", "desc": "Range-based access using start:stop:step.", "children": [{"name": "arr[1:4]", "desc": "Slice: elements from index 1 up to (not including) 4."}, {"name": "arr[:3]  /  arr[3:]", "desc": "Omitted bound means 'from the start' / 'to the end'."}, {"name": "arr[::2]", "desc": "Step of 2 \u2014 every other element."}, {"name": "arr[::-1]", "desc": "Negative step \u2014 reverses the array."}, {"name": "arr[0:2, 1:3]", "desc": "Independent slices per axis carve out a sub-block of a multi-dim array."}]}, {"name": "Ellipsis & newaxis", "desc": "Shorthand for 'the rest of the axes' and adding new axes.", "children": [{"name": "... (Ellipsis)", "desc": "Fills in 'as many full slices as needed' for the axes you didn't write out."}, {"name": "np.newaxis / None", "desc": "Inserts a new length-1 axis at that position \u2014 used to reshape for broadcasting."}]}, {"name": "Boolean Mask Indexing", "desc": "Selecting elements by a True/False condition.", "children": [{"name": "arr[arr > x]", "desc": "Boolean-mask indexing: keep only elements where the condition is True."}, {"name": "arr[(cond1) & (cond2)]", "desc": "Combine masks with & (and) / | (or); each condition needs its own parentheses."}, {"name": "arr[mask] = value", "desc": "Assign through a mask to edit only the matching elements, in place."}]}, {"name": "Fancy Indexing", "desc": "Selecting elements using arrays of positions.", "children": [{"name": "arr[[1, 3, 5]]", "desc": "Integer-array (fancy) indexing: pick out elements at arbitrary positions."}, {"name": "arr[rows, cols]", "desc": "Two integer arrays of matching length pick out (row, col) pairs, not a rectangle."}, {"name": "arr[:, [0, 2]]", "desc": "Mixing a slice on one axis with fancy indexing on another."}]}, {"name": "Indexing Protocol (dunders)", "desc": "The special methods that make arr[...] syntax work.", "children": [{"name": "__getitem__(key)", "desc": "The method actually called for every arr[...] read."}, {"name": "__setitem__(key, value)", "desc": "The method actually called for every arr[...] = value write."}, {"name": "__delitem__(key)", "desc": "Backing method for del arr[...] \u2014 not supported for fixed-size ndarrays."}, {"name": "__len__()", "desc": "len(arr) \u2014 size of the first axis only (not total element count)."}, {"name": "__iter__()", "desc": "Powers 'for row in arr:' \u2014 iterates over the first axis."}, {"name": "__contains__(item)", "desc": "Backing method for 'x in arr'."}]}]}, {"name": "Memory Model", "desc": "How array data actually sits in RAM.", "children": [{"name": "Flags", "desc": "Six booleans describing the memory layout.", "children": [{"name": "C_CONTIGUOUS", "desc": "True if elements are laid out row-by-row (C order) with no gaps."}, {"name": "F_CONTIGUOUS", "desc": "True if elements are laid out column-by-column (Fortran order) with no gaps."}, {"name": "OWNDATA", "desc": "True if this array owns its memory, rather than viewing someone else's."}, {"name": "WRITEABLE", "desc": "True if elements can be modified."}, {"name": "ALIGNED", "desc": "True if data is aligned properly in memory for the CPU."}, {"name": "WRITEBACKIFCOPY", "desc": "True if writes must be copied back to a base array on release (internal, rare)."}]}, {"name": "Layout Attributes", "desc": "The numbers that describe spacing between elements.", "children": [{"name": "strides (bytes/axis step)", "desc": "Cross-referenced from Attributes \u2014 the actual byte-jump used to walk memory."}, {"name": "itemsize (bytes/element)", "desc": "Cross-referenced from Attributes \u2014 determined entirely by dtype."}, {"name": "nbytes (total bytes)", "desc": "Cross-referenced from Attributes \u2014 always size x itemsize."}]}, {"name": "Views vs Copies", "desc": "Whether an operation shares memory with the original or allocates new memory.", "children": [{"name": "Slicing -> view", "desc": "Basic slices (arr[1:4]) share memory with the original \u2014 no copy happens."}, {"name": "Fancy/bool indexing -> copy", "desc": "Boolean masks and integer-array indexing always return a new, independent array."}, {"name": ".copy()", "desc": "Force an independent copy when you need to edit without affecting the source."}, {"name": ".base", "desc": "None if the array owns its data; otherwise points to the object it's a view of."}, {"name": "np.shares_memory(a, b)", "desc": "Exact check for whether two arrays overlap in memory."}]}, {"name": "Buffer / Array Protocol", "desc": "How other libraries (C, ctypes, Cython) can read NumPy memory directly.", "children": [{"name": "data", "desc": "Buffer object pointing directly at the start of the array's memory."}, {"name": "__array_interface__", "desc": "Python-level dict describing shape/dtype/pointer \u2014 lets other libraries read the array without copying."}, {"name": "__array_struct__", "desc": "C-level struct version of the same protocol, used by C extensions like Cython/ctypes."}]}]}, {"name": "Operators", "desc": "The operator symbols (+, ==, &, ...) are shorthand for these dunder methods.", "children": [{"name": "Arithmetic", "desc": "Math operators \u2014 each has a normal, reflected, and in-place form.", "children": [{"name": "Addition (+)", "desc": "The + family of operators.", "children": [{"name": "__add__", "desc": "arr + x"}, {"name": "__radd__", "desc": "x + arr (x isn't an ndarray)"}, {"name": "__iadd__", "desc": "arr += x, modifies arr in place"}]}, {"name": "Subtraction (-)", "desc": "The - family of operators.", "children": [{"name": "__sub__", "desc": "arr - x"}, {"name": "__rsub__", "desc": "x - arr"}, {"name": "__isub__", "desc": "arr -= x, in place"}]}, {"name": "Multiplication (*)", "desc": "The * family of operators.", "children": [{"name": "__mul__", "desc": "arr * x (element-wise, NOT matrix multiply)"}, {"name": "__rmul__", "desc": "x * arr"}, {"name": "__imul__", "desc": "arr *= x, in place"}]}, {"name": "True Division (/)", "desc": "The / family of operators.", "children": [{"name": "__truediv__", "desc": "arr / x"}, {"name": "__rtruediv__", "desc": "x / arr"}, {"name": "__itruediv__", "desc": "arr /= x, in place"}]}, {"name": "Floor Division (//)", "desc": "The // family of operators.", "children": [{"name": "__floordiv__", "desc": "arr // x"}, {"name": "__rfloordiv__", "desc": "x // arr"}, {"name": "__ifloordiv__", "desc": "arr //= x, in place"}]}, {"name": "Modulo (%)", "desc": "The % family of operators.", "children": [{"name": "__mod__", "desc": "arr % x"}, {"name": "__rmod__", "desc": "x % arr"}, {"name": "__imod__", "desc": "arr %= x, in place"}]}, {"name": "Power (**)", "desc": "The ** family of operators.", "children": [{"name": "__pow__", "desc": "arr ** x"}, {"name": "__rpow__", "desc": "x ** arr"}, {"name": "__ipow__", "desc": "arr **= x, in place"}]}, {"name": "Matrix Multiply (@)", "desc": "The @ family of operators.", "children": [{"name": "__matmul__", "desc": "arr @ x \u2014 real matrix product, unlike *"}, {"name": "__rmatmul__", "desc": "x @ arr"}, {"name": "__imatmul__", "desc": "arr @= x, in place"}]}, {"name": "divmod()", "desc": "The divmod family of operators.", "children": [{"name": "__divmod__", "desc": "divmod(arr, x) -> (floor division, remainder)"}, {"name": "__rdivmod__", "desc": "divmod(x, arr)"}]}]}, {"name": "Unary", "desc": "Single-operand operators.", "children": [{"name": "__neg__", "desc": "-arr \u2014 flips the sign of every element."}, {"name": "__pos__", "desc": "+arr \u2014 returns the array unchanged (unary plus)."}, {"name": "__abs__", "desc": "abs(arr) \u2014 absolute value of every element."}, {"name": "__invert__", "desc": "~arr \u2014 bitwise NOT on integers/booleans."}]}, {"name": "Bitwise", "desc": "Bit-level operators on integer/boolean arrays.", "children": [{"name": "AND (&)", "desc": "The & family of operators.", "children": [{"name": "__and__", "desc": "arr & x"}, {"name": "__rand__", "desc": "x & arr"}, {"name": "__iand__", "desc": "arr &= x"}]}, {"name": "OR (|)", "desc": "The | family of operators.", "children": [{"name": "__or__", "desc": "arr | x"}, {"name": "__ror__", "desc": "x | arr"}, {"name": "__ior__", "desc": "arr |= x"}]}, {"name": "XOR (^)", "desc": "The ^ family of operators.", "children": [{"name": "__xor__", "desc": "arr ^ x"}, {"name": "__rxor__", "desc": "x ^ arr"}, {"name": "__ixor__", "desc": "arr ^= x"}]}, {"name": "Left Shift (<<)", "desc": "The << family of operators.", "children": [{"name": "__lshift__", "desc": "arr << x"}, {"name": "__rlshift__", "desc": "x << arr"}, {"name": "__ilshift__", "desc": "arr <<= x"}]}, {"name": "Right Shift (>>)", "desc": "The >> family of operators.", "children": [{"name": "__rshift__", "desc": "arr >> x"}, {"name": "__rrshift__", "desc": "x >> arr"}, {"name": "__irshift__", "desc": "arr >>= x"}]}]}, {"name": "Comparison", "desc": "Element-wise comparisons \u2014 always return a boolean array.", "children": [{"name": "__eq__", "desc": "arr == x \u2014 element-wise equality, returns a boolean array (not a single bool)."}, {"name": "__ne__", "desc": "arr != x \u2014 element-wise inequality."}, {"name": "__lt__", "desc": "arr < x"}, {"name": "__le__", "desc": "arr <= x"}, {"name": "__gt__", "desc": "arr > x"}, {"name": "__ge__", "desc": "arr >= x"}]}, {"name": "Type Conversion / Truthiness", "desc": "Converting a (single-element) array to a plain Python scalar.", "children": [{"name": "__bool__", "desc": "bool(arr) \u2014 only legal for arrays with exactly one element; otherwise raises ValueError (this is why 'if arr:' fails on multi-element arrays)."}, {"name": "__int__", "desc": "int(arr) \u2014 only legal for single-element arrays."}, {"name": "__float__", "desc": "float(arr) \u2014 only legal for single-element arrays."}, {"name": "__complex__", "desc": "complex(arr) \u2014 only legal for single-element arrays."}, {"name": "__index__", "desc": "Lets a single-element integer array be used anywhere Python needs a plain int, e.g. list indexing."}]}, {"name": "Object Lifecycle", "desc": "Display, copying, pickling, and hashing behavior.", "children": [{"name": "__repr__", "desc": "What you see when you type an array name alone / print(repr(arr)) \u2014 the 'array([...])' form."}, {"name": "__str__", "desc": "What print(arr) shows \u2014 a more compact, human-friendly layout."}, {"name": "__hash__ = None", "desc": "Arrays are unhashable (they're mutable) \u2014 you can't use one as a dict key or put it in a set."}, {"name": "__copy__", "desc": "Hook used by Python's copy.copy() \u2014 shallow copy."}, {"name": "__deepcopy__", "desc": "Hook used by Python's copy.deepcopy()."}, {"name": "__reduce__ / __reduce_ex__", "desc": "Hooks that make pickling an array possible."}, {"name": "__setstate__", "desc": "Restores an array's state when unpickling."}, {"name": "__sizeof__", "desc": "Size of the Python object itself in bytes (close to, but not exactly, nbytes)."}]}]}]};
+
+const CAT_COLORS = {
+  "Attributes": "#5aa9ff",
+  "Methods": "#5ad1a0",
+  "Indexing": "#f2b950",
+  "Memory Model": "#c084fc",
+  "Operators": "#ff6b8b"
+};
+
+const dx = 24;
+const dy = 230;
+const margin = {top: 40, right: 260, bottom: 40, left: 160};
+
+const svg = d3.select("#chart");
+const gZoom = svg.append("g");
+const gLink = gZoom.append("g").attr("class","links");
+const gNode = gZoom.append("g").attr("class","nodes");
+
+const zoom = d3.zoom().scaleExtent([0.15, 3]).on("zoom", (ev) => {
+  gZoom.attr("transform", ev.transform);
+});
+svg.call(zoom);
+
+const root = d3.hierarchy(DATA);
+let idCounter = 0;
+root.each(d => { d.id = idCounter++; });
+const allNodes = root.descendants(); // full list, used for search regardless of collapse state
+const totalCount = allNodes.length;
+
+function categoryOf(d){
+  if (d.depth === 0) return null;
+  let a = d;
+  while (a.depth > 1) a = a.parent;
+  return a.data.name;
+}
+root.each(d => { d.cat = categoryOf(d); });
+
+// initial collapse: keep depth 0-1 open, collapse depth >= 2
+root.each(d => {
+  if (d.depth >= 2 && d.children) {
+    d._children = d.children;
+    d.children = null;
+  }
+});
+
+const treeLayout = d3.tree().nodeSize([dx, dy]);
+const diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
+
+function colorFor(d){
+  if (d.depth === 0) return "#e6e8ef";
+  return CAT_COLORS[d.cat] || "#8891a8";
+}
+
+function updateCounter(){
+  const visible = root.descendants().length;
+  document.getElementById("counter").textContent = visible + " / " + totalCount + " nodes visible";
+}
+
+function showDetail(d){
+  document.getElementById("detail-name").textContent = d.data.name;
+  document.getElementById("detail-desc").textContent = d.data.desc || "(category node — click to expand)";
+  const path = d.ancestors().reverse().map(a => a.data.name).join("  ->  ");
+  document.getElementById("detail-path").textContent = path;
+}
+
+function render(){
+  treeLayout(root);
+
+  const nodes = root.descendants();
+  const links = root.links();
+
+  const link = gLink.selectAll("path").data(links, d => d.target.id);
+  link.exit().remove();
+  link.enter().append("path").attr("class","link")
+    .merge(link)
+    .attr("d", diagonal);
+
+  const node = gNode.selectAll("g.node").data(nodes, d => d.id);
+  node.exit().remove();
+
+  const nodeEnter = node.enter().append("g")
+      .attr("class","node")
+      .on("click", (event, d) => {
+        if (d._children || d.children) {
+          if (d.children) { d._children = d.children; d.children = null; }
+          else { d.children = d._children; d._children = null; }
+          render();
+        }
+        showDetail(d);
+      })
+      .on("mouseover", (event, d) => showDetail(d));
+
+  nodeEnter.append("circle").attr("r", 5.5);
+  nodeEnter.append("text")
+      .attr("dy", "0.31em")
+      .attr("x", d => (d._children || d.children) ? -10 : 10)
+      .attr("text-anchor", d => (d._children || d.children) ? "end" : "start")
+      .text(d => d.data.name);
+
+  const nodeMerge = nodeEnter.merge(node);
+  nodeMerge.attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+  nodeMerge.select("circle")
+      .attr("fill", d => d.children ? colorFor(d) : (d._children ? "#0f1117" : colorFor(d)))
+      .attr("stroke", d => colorFor(d));
+  nodeMerge.select("text")
+      .attr("x", d => (d._children || d.children) ? -10 : 10)
+      .attr("text-anchor", d => (d._children || d.children) ? "end" : "start")
+      .attr("fill", d => d.depth === 0 ? "#fff" : "#e6e8ef");
+  nodeMerge.classed("match", d => d._matched === true);
+
+  updateCounter();
+}
+
+function expandAll(){
+  root.each(d => { if (d._children) { d.children = d._children; d._children = null; } });
+  render();
+}
+function collapseToOverview(){
+  root.each(d => {
+    if (d.depth >= 2 && d.children) { d._children = d.children; d.children = null; }
+    if (d.depth >= 2 && d._children && !d.children) { /* already collapsed */ }
+  });
+  render();
+  fitView();
+}
+
+function fitView(){
+  const nodes = root.descendants();
+  if (!nodes.length) return;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  nodes.forEach(d => {
+    if (d.x < x0) x0 = d.x;
+    if (d.x > x1) x1 = d.x;
+    if (d.y < y0) y0 = d.y;
+    if (d.y > y1) y1 = d.y;
+  });
+  const w = document.getElementById("chart-wrap").clientWidth;
+  const h = document.getElementById("chart-wrap").clientHeight;
+  const treeW = (y1 - y0) + margin.left + margin.right;
+  const treeH = (x1 - x0) + margin.top + margin.bottom;
+  const scale = Math.max(0.15, Math.min(1.4, Math.min(w / treeW, h / treeH)));
+  const tx = w/2 - ((y0+y1)/2) * scale;
+  const ty = h/2 - ((x0+x1)/2) * scale;
+  svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+}
+
+document.getElementById("expandAll").addEventListener("click", () => { expandAll(); setTimeout(fitView, 50); });
+document.getElementById("collapseAll").addEventListener("click", collapseToOverview);
+document.getElementById("fit").addEventListener("click", fitView);
+
+document.getElementById("search").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  allNodes.forEach(d => d._matched = false);
+  if (q.length > 0) {
+    allNodes.forEach(d => {
+      const hay = (d.data.name + " " + (d.data.desc||"")).toLowerCase();
+      if (hay.includes(q)) {
+        d._matched = true;
+        d.ancestors().forEach(a => {
+          if (a._children) { a.children = a._children; a._children = null; }
+        });
+      }
+    });
+  }
+  render();
+});
+
+render();
+showDetail(root);
+setTimeout(fitView, 60);
+window.addEventListener("resize", () => setTimeout(fitView, 100));
+</script>
+</body>
+</html>

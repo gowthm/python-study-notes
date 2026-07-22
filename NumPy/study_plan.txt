@@ -1,0 +1,16 @@
+NumPy Study Plan
+================
+
+1. ndarray (what it is and why it exists)
+2. Array creation (array, zeros, ones, arange, linspace)
+3. Attributes (shape, ndim, dtype, size, itemsize, nbytes)
+4. Indexing and slicing
+5. Boolean masking
+6. Broadcasting
+7. Vectorized operations
+8. Reshaping (reshape, flatten, transpose)
+9. Mathematical functions (sqrt, log, exp, sin, etc.)
+10. Statistics (sum, mean, std, min, max)
+11. Random module
+12. Linear algebra
+13. File I/O
