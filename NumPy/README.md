@@ -199,3 +199,7 @@ When operating on two arrays, NumPy compares their shapes element-wise. It start
 
 - They are equal, or
 - One of them is `1`.
+
+
+Casting with .astype() truncates toward zero — it does not round:
+np.array([1.7, -1.7]).astype(np.int32)   # [ 1 -1][text](c:/Users/ACER/Downloads/04_scipython__code.ipynb)
