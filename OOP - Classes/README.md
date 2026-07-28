@@ -20,6 +20,23 @@ This directory contains resources illustrating core Object-Oriented Programming 
 * **Guide**: [method_resolution_order.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/method_resolution_order.md)
 * **Description**: Explains Python's MRO, the C3 Linearization algorithm, and how Python resolves the classic "Diamond Problem".
 
+### 4. `@classmethod` vs `@staticmethod`
+* **Guide**: [classmethod_staticmethod.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/classmethod_staticmethod.md)
+* **Description**: Breaks down the difference between instance methods, class methods, and static methods, and when to use each.
+
+### 5. The `@property` Decorator
+* **Guide**: [property.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/property.md)
+* **File**: [property_example.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/property_example.py)
+* **Description**: Shows how to use getters and setters to validate data while keeping attribute-style access.
+
+### 6. Composition (`Car` ➜ `Engine`)
+* **File**: [example_composition.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/example_composition.py)
+* **Description**: A practical "has-a" example — a `Car` is composed of an `Engine` instead of inheriting from it.
+
+### 7. The Data Model (Dunder Methods)
+* **Guide**: [data_model.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/data_model.md)
+* **Description**: A quick reference for Python's special ("dunder") methods that hook a class into built-in language behavior.
+
 ---
 
 ## 🧱 The Constructor: `__init__()`
@@ -102,6 +119,41 @@ print(s2.name)  # Output: Bob
 >         this.name = name
 > ```
 > However, using anything other than `self` is highly discouraged as it violates PEP 8 standards and reduces code readability for other developers.
+
+---
+
+## 🧩 Composition
+
+**Composition** is an OOP concept that models a **"has-a"** relationship by combining simpler objects to build more complex ones. Instead of inheriting properties from a parent class (as with inheritance), a composite class delegates responsibility by storing instances of other classes as its attributes.
+
+> 📖 **Reference**: [An Overview of Inheritance in Python – Real Python](https://realpython.com/inheritance-composition-python/#an-overview-of-inheritance-in-python)
+
+### 🤔 Why Use Composition?
+
+* 🔄 **Flexibility**: You can swap out component behaviors dynamically at runtime.
+* 🔗 **Low Coupling**: It keeps classes independent and prevents breaking changes from cascading down a deep hierarchy.
+* 🎯 **Separation of Concerns**: Each class handles exactly one responsibility.
+
+### ⚖️ Composition vs. Inheritance
+
+Many developers lean toward the design principle **"Favor composition over inheritance."** A quick breakdown helps explain why:
+
+* **Inheritance ("Is-A")**: A `Car` **is a** `Vehicle`. It creates a tight architectural bond where the child automatically pulls in all traits from the parent.
+* **Composition ("Has-A")**: A `Car` **has an** `Engine`. It builds systems out of individual, highly swappable building blocks rather than a rigid family tree.
+
+#### 📊 Visual Comparison
+
+**Inheritance** ("is-a"):
+
+![Diagram showing basic inheritance in Python](https://files.realpython.com/media/ic-basic-inheritance.f8dc9ffee4d7.jpg)
+
+**Composition** ("has-a"):
+
+![Diagram showing basic composition in Python](https://files.realpython.com/media/ic-basic-composition.8a15876f7db2.jpg)
+
+> 📖 **Reference**: [Composition in Python – Real Python](https://realpython.com/inheritance-composition-python/#composition-in-python)
+
+See [example_composition.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/example_composition.py) for a runnable `Car` + `Engine` example.
 
 ---
 

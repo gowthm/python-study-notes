@@ -1,0 +1,146 @@
+<h2 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">Interactive step-through of Python's call stack and heap while running a small script</h2>
+<div id="codeBox" style="font-family:var(--font-mono);font-size:13px;line-height:1.7;background:var(--surface-1);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;white-space:pre"></div>
+<p id="descBox" style="font-size:14px;color:var(--text-secondary);min-height:48px;margin:0 0 1.25rem"></p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.25rem">
+  <div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--text-secondary)">Call stack</div>
+    <div id="stackBox" style="display:flex;flex-direction:column-reverse;gap:8px"></div>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--text-secondary)">Heap</div>
+    <div id="heapBox" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+  <button id="prevBtn">Previous</button>
+  <span id="stepLabel" style="font-size:13px;color:var(--text-muted)"></span>
+  <button id="nextBtn">Next</button>
+</div>
+<script>
+const codeLines = [
+"def square(n):",
+"    result = n * n",
+"    return result",
+"x = 5",
+"y = 10",
+"z = square(x)",
+"lst = [1, 2, 3]",
+"lst2 = lst"
+];
+
+const steps = [
+{line:3, desc:"x = 5 creates an int object on the heap. The global frame stores x as a reference to it, not the value itself.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:1,color:"#1D9E75"}]},
+{line:4, desc:"y = 10 creates another int object on the heap. y is a new name pointing to it.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:1,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"}]},
+{line:5, desc:"Calling square(x) pushes a new frame onto the stack. Parameter n points to the same object as x, no copy is made, so its refcount goes up to 2.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"}]},
+        {name:"square() frame", vars:[{k:"n",obj:"0x1a2",color:"#1D9E75"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:2,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"}]},
+{line:1, desc:"n * n computes a brand new int object, 25. result refers to this fresh heap object.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"}]},
+        {name:"square() frame", vars:[{k:"n",obj:"0x1a2",color:"#1D9E75"},{k:"result",obj:"0x1a4",color:"#D85A30"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:2,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"},{id:"0x1a4",type:"int",val:"25",ref:1,color:"#D85A30"}]},
+{line:2, desc:"return pops the square() frame off the stack. z now refers to that same 25 object. With n and result gone, 5's refcount drops back to 1.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"},{k:"z",obj:"0x1a4",color:"#D85A30"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:1,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"},{id:"0x1a4",type:"int",val:"25",ref:1,color:"#D85A30"}]},
+{line:6, desc:"lst = [1, 2, 3] builds a list object on the heap. Unlike the ints above, lists are mutable.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"},{k:"z",obj:"0x1a4",color:"#D85A30"},{k:"lst",obj:"0x1a5",color:"#BA7517"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:1,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"},{id:"0x1a4",type:"int",val:"25",ref:1,color:"#D85A30"},{id:"0x1a5",type:"list",val:"[1, 2, 3]",ref:1,color:"#BA7517"}]},
+{line:7, desc:"lst2 = lst copies the reference, not the list. Both names now point to the same object, refcount is 2, so mutating one changes the other.",
+ stack:[{name:"Global frame", vars:[{k:"x",obj:"0x1a2",color:"#1D9E75"},{k:"y",obj:"0x1a3",color:"#7F77DD"},{k:"z",obj:"0x1a4",color:"#D85A30"},{k:"lst",obj:"0x1a5",color:"#BA7517"},{k:"lst2",obj:"0x1a5",color:"#BA7517"}]}],
+ heap:[{id:"0x1a2",type:"int",val:"5",ref:1,color:"#1D9E75"},{id:"0x1a3",type:"int",val:"10",ref:1,color:"#7F77DD"},{id:"0x1a4",type:"int",val:"25",ref:1,color:"#D85A30"},{id:"0x1a5",type:"list",val:"[1, 2, 3]",ref:2,color:"#BA7517"}]}
+];
+
+let idx = 0;
+
+function renderCode(activeLine) {
+  const box = document.getElementById("codeBox");
+  box.innerHTML = "";
+  codeLines.forEach((l, i) => {
+    const row = document.createElement("div");
+    row.textContent = l || " ";
+    row.style.padding = "1px 6px";
+    row.style.borderRadius = "4px";
+    if (i === activeLine) {
+      row.style.background = "var(--bg-accent)";
+      row.style.color = "var(--text-accent)";
+    }
+    box.appendChild(row);
+  });
+}
+
+function renderStack(frames) {
+  const box = document.getElementById("stackBox");
+  box.innerHTML = "";
+  frames.forEach(f => {
+    const frame = document.createElement("div");
+    frame.style.border = "0.5px solid var(--border)";
+    frame.style.borderRadius = "var(--radius)";
+    frame.style.padding = "8px 12px";
+    frame.style.background = "var(--surface-1)";
+    const title = document.createElement("div");
+    title.textContent = f.name;
+    title.style.fontSize = "13px";
+    title.style.fontWeight = "500";
+    title.style.marginBottom = "6px";
+    frame.appendChild(title);
+    f.vars.forEach(v => {
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.alignItems = "center";
+      row.style.gap = "6px";
+      row.style.fontSize = "13px";
+      row.style.color = "var(--text-secondary)";
+      row.style.margin = "2px 0";
+      const dot = document.createElement("span");
+      dot.style.width = "8px";
+      dot.style.height = "8px";
+      dot.style.borderRadius = "50%";
+      dot.style.background = v.color;
+      dot.style.flexShrink = "0";
+      row.appendChild(dot);
+      const label = document.createElement("span");
+      label.textContent = v.k + " -> " + v.obj;
+      row.appendChild(label);
+      frame.appendChild(row);
+    });
+    box.appendChild(frame);
+  });
+}
+
+function renderHeap(objs) {
+  const box = document.getElementById("heapBox");
+  box.innerHTML = "";
+  objs.forEach(o => {
+    const card = document.createElement("div");
+    card.style.border = "0.5px solid var(--border)";
+    card.style.borderLeftWidth = "3px";
+    card.style.borderLeftColor = o.color;
+    card.style.borderRadius = "var(--radius)";
+    card.style.padding = "8px 12px";
+    card.style.background = "var(--surface-1)";
+    card.style.fontSize = "13px";
+    card.innerHTML = "<div style=\"font-weight:500\">" + o.type + ": " + o.val + "</div><div style=\"color:var(--text-muted);font-size:12px;margin-top:2px\">id " + o.id + " &middot; refcount " + o.ref + "</div>";
+    box.appendChild(card);
+  });
+}
+
+function render() {
+  const s = steps[idx];
+  renderCode(s.line);
+  renderStack(s.stack);
+  renderHeap(s.heap);
+  document.getElementById("descBox").textContent = s.desc;
+  document.getElementById("stepLabel").textContent = "Step " + (idx+1) + " of " + steps.length;
+  document.getElementById("prevBtn").disabled = idx === 0;
+  document.getElementById("nextBtn").disabled = idx === steps.length - 1;
+}
+
+document.getElementById("prevBtn").addEventListener("click", () => { if (idx>0){idx--;render();} });
+document.getElementById("nextBtn").addEventListener("click", () => { if (idx<steps.length-1){idx++;render();} });
+
+render();
+</script>
