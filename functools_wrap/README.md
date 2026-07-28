@@ -27,9 +27,9 @@ This directory includes resources explaining functions and advanced metadata pre
 * **Referenced in**: `firstFunc` and `secondFunc` are basic examples showing how a function can call another function and return its value.
 
 ### 2. Metadata Preservation with `functools.wraps`
-* **Script File**: [metadata_preservation.py](file:///d:/python/python-study-notes/functions/metadata_preservation.py)
+* **Script File**: [metadata_preservation.py](file:///d:/python/python-study-notes/functools_wrap/metadata_preservation.py)
 * **Description**: Shows how custom decorators can accidentally overwrite function docstrings and names, and how to use `@wraps(func)` to preserve them.
 
 ### 3. Introspection and Wraps Explanation
-* **Guide**: [metadata_preservation_guide.md](file:///d:/python/python-study-notes/functions/metadata_preservation_guide.md)
+* **Guide**: [metadata_preservation_guide.md](file:///d:/python/python-study-notes/functools_wrap/metadata_preservation_guide.md)
 * **Description**: A comprehensive visual and text guide explaining why metadata preservation is critical for debugging, framework code, and documentation.

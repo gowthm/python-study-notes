@@ -1,3 +1,7 @@
+# 🚨 Python `requests` Library Exception Hierarchy
+
+A guide to the exceptions raised by the [`requests`](https://requests.readthedocs.io/) HTTP library, what triggers each one, and how to handle it.
+
 ```
 BaseException
 └── Exception
@@ -22,7 +26,9 @@ BaseException
         └── UnrewindableBodyError
 ```
 
-RequestException is the parent class of all requests exceptions.
+`RequestException` is the parent class of all `requests` exceptions.
+
+---
 
 ## 1. RequestException
 
@@ -103,7 +109,7 @@ except requests.Timeout:
     print("Request timed out")
 ```
 
-Think of it as
+**Think of it as:**
 
 > "I waited too long."
 
@@ -134,7 +140,7 @@ except requests.ConnectTimeout:
     print("Couldn't connect")
 ```
 
-Usually caused by
+**Usually caused by:**
 
 - server offline
 - firewall
@@ -189,7 +195,7 @@ Timeout
 
 Raised when a connection cannot be made.
 
-Examples
+**Examples:**
 
 - No Internet
 - DNS failed
@@ -204,7 +210,7 @@ except requests.ConnectionError:
     print("Connection failed")
 ```
 
-Think of
+**Think of:**
 
 > No road to the destination.
 
@@ -248,7 +254,7 @@ Occurs when SSL/TLS verification fails.
 requests.get("https://expired.badssl.com/")
 ```
 
-Possible reasons
+**Possible reasons:**
 
 - expired certificate
 - invalid certificate
@@ -263,7 +269,7 @@ except requests.SSLError:
 
 ## 9. TooManyRedirects
 
-Suppose
+**Suppose:**
 
 ```
 A -> B
@@ -295,7 +301,7 @@ TooManyRedirects
 
 ## 10. MissingSchema
 
-Schema means
+**Schema means:**
 
 ```
 http://
@@ -367,7 +373,7 @@ headers = {
 requests.get(url, headers=headers)
 ```
 
-This may raise
+**This may raise:**
 
 ```
 InvalidHeader
@@ -391,11 +397,11 @@ Requests cannot reconstruct the response.
 ChunkedEncodingError
 ```
 
-Mostly seen while downloading large files.
+*Mostly seen while downloading large files.*
 
 ## 15. ContentDecodingError
 
-The server says
+**The server says:**
 
 ```
 Content-Encoding: gzip

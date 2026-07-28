@@ -9,32 +9,32 @@ Object-Oriented Programming (OOP) is a programming paradigm that uses **classes*
 This directory contains resources illustrating core Object-Oriented Programming (OOP) concepts in Python:
 
 ### 1. Multiple Inheritance
-* **File**: [multiple_inheritance.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/multiple_inheritance.py)
+* **File**: [multiple_inheritance.py](file:///d:/python/python-study-notes/oop_classes/multiple_inheritance.py)
 * **Description**: Demonstrates how a subclass can inherit from multiple parent classes (e.g., `Smartphone` inheriting from both `Camera` and `Phone`).
 
 ### 2. Using `super()`
-* **File**: [super_method.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/super_method.py)
+* **File**: [super_method.py](file:///d:/python/python-study-notes/oop_classes/super_method.py)
 * **Description**: Illustrates calling parent class constructors and methods using Python's built-in `super()` function.
 
 ### 3. Method Resolution Order (MRO)
-* **Guide**: [method_resolution_order.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/method_resolution_order.md)
+* **Guide**: [method_resolution_order.md](file:///d:/python/python-study-notes/oop_classes/method_resolution_order.md)
 * **Description**: Explains Python's MRO, the C3 Linearization algorithm, and how Python resolves the classic "Diamond Problem".
 
 ### 4. `@classmethod` vs `@staticmethod`
-* **Guide**: [classmethod_staticmethod.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/classmethod_staticmethod.md)
+* **Guide**: [classmethod_staticmethod.md](file:///d:/python/python-study-notes/oop_classes/classmethod_staticmethod.md)
 * **Description**: Breaks down the difference between instance methods, class methods, and static methods, and when to use each.
 
 ### 5. The `@property` Decorator
-* **Guide**: [property.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/property.md)
-* **File**: [property_example.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/property_example.py)
+* **Guide**: [property.md](file:///d:/python/python-study-notes/oop_classes/property.md)
+* **File**: [property_example.py](file:///d:/python/python-study-notes/oop_classes/property_example.py)
 * **Description**: Shows how to use getters and setters to validate data while keeping attribute-style access.
 
 ### 6. Composition (`Car` ➜ `Engine`)
-* **File**: [example_composition.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/example_composition.py)
+* **File**: [example_composition.py](file:///d:/python/python-study-notes/oop_classes/example_composition.py)
 * **Description**: A practical "has-a" example — a `Car` is composed of an `Engine` instead of inheriting from it.
 
 ### 7. The Data Model (Dunder Methods)
-* **Guide**: [data_model.md](file:///d:/python/python-study-notes/OOP%20-%20Classes/data_model.md)
+* **Guide**: [data_model.md](file:///d:/python/python-study-notes/oop_classes/data_model.md)
 * **Description**: A quick reference for Python's special ("dunder") methods that hook a class into built-in language behavior.
 
 ---
@@ -153,7 +153,7 @@ Many developers lean toward the design principle **"Favor composition over inher
 
 > 📖 **Reference**: [Composition in Python – Real Python](https://realpython.com/inheritance-composition-python/#composition-in-python)
 
-See [example_composition.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/example_composition.py) for a runnable `Car` + `Engine` example.
+See [example_composition.py](file:///d:/python/python-study-notes/oop_classes/example_composition.py) for a runnable `Car` + `Engine` example.
 
 ---
 

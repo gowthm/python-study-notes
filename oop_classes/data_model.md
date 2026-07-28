@@ -4,12 +4,11 @@ These are **special methods** (double underscore, "dunder") that hook your class
 
 | Dunder method | Triggered by | Example |
 | :--- | :--- | :--- |
-| `__init__` | `MyClass(...)` | Constructor — initializes a new instance |
 | `__str__` | `print(obj)` / `str(obj)` | Human-readable description |
-| `__repr__` | `repr(obj)` / the REPL | Unambiguous, developer-facing description |
 | `__len__` | `len(obj)` | Returns the object's "length" |
-| `__eq__` | `obj1 == obj2` | Defines equality between two instances |
 | `__add__` | `obj1 + obj2` | Defines the `+` operator |
+
+> ➡️ **Moved**: `__init__`, `__repr__`, and `__eq__` are covered in [`oop_dataclasses/README.md`](file:///d:/python/python-study-notes/oop_dataclasses/README.md#1-auto-generated-methods) instead, since `@dataclass` auto-generates exactly those three — no need to explain them twice.
 
 ```python
 class Book:
@@ -30,5 +29,3 @@ print(len(b))  # Output: 412                -> uses __len__
 ```
 
 > 🚧 More dunder methods and examples to be added here as they're covered.
-
-> 📖 **Related**: [`OOP - dataclasses`](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/README.md) covers `@dataclass`, which auto-generates `__init__`, `__repr__`, and `__eq__` for you instead of writing them by hand as shown above.

@@ -1,3 +1,5 @@
+"""Basic CRUD (Create, Read, Update, Delete) operations on a dictionary."""
+
 product = {
     "id": "SKU-234",
     "name": "Wireless mouse",
@@ -13,5 +15,3 @@ product['price'] = 234.45
 
 # Delete
 product.pop('stock')
-
-

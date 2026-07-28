@@ -40,4 +40,4 @@ Properties solve this by acting as a **gatekeeper**. They let you intercept that
 > [!WARNING]
 > **Common mistake**: writing `self.horsepower` *inside* the getter/setter sends you back through the gate again — forever (infinite recursion). Always read/write the private `self._horsepower` inside the getter and setter, never `self.horsepower`.
 
-See [property_example.py](file:///d:/python/python-study-notes/OOP%20-%20Classes/property_example.py) for a runnable example.
+See [property_example.py](file:///d:/python/python-study-notes/oop_classes/property_example.py) for a runnable example.

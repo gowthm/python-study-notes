@@ -12,6 +12,10 @@ Here is a visual representation of how decorators wrap your functions:
 
 ![Decorators Flow](file:///d:/python/python-study-notes/decorators/decorators_flow.png)
 
+And here are handwritten notes tracing the exact call order for `@dec` wrapping `hello()`:
+
+![Handwritten notes tracing decorator call order: step 1 creates the decorator, step 2 calls the wrapper function, step 3 calls the hello function, step 4 returns through wrapper](file:///d:/python/python-study-notes/decorators/decorator_handwritten_notes.png)
+
 ---
 
 ## 📂 Example Scripts & Guides

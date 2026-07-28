@@ -10,7 +10,7 @@ Lambda functions are commonly used as short-lived, one-off operations with highe
 
 Here is the general structure of a lambda function:
 
-![Lambda Concept Diagram](https://media.geeksforgeeks.org/wp-content/uploads/20260123120726076161/lambda.webp)
+![Lambda Concept Diagram](file:///d:/python/python-study-notes/lambda_functions/lambda_function_diagram.webp)
 
 ---
 

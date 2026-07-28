@@ -1,3 +1,5 @@
+"""Fetches posts from a public test API and handles the main requests exceptions."""
+
 import requests
 
 try:

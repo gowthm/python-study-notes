@@ -1,101 +1,39 @@
-def decorator(func):
-    def wrapper(*args, **kwargs):
-        print("Before")
-        result = func(*args, **kwargs)
-        print("After")
-        return result
-
-    return wrapper
-
-@decorator
-def hello():
-    print("Hello")
-
 """
- Python automatically converts this to:
- def hello():
-    print("Hello")
+Under-the-hood mechanics of `@decorator` syntax.
 
-hello = decorator(hello)
+Python compiles:
+    @decorator
+    def hello(): ...
 
-Now let's see what happens.
+into:
+    def hello(): ...
+    hello = decorator(hello)
 
-decorator(hello) is called.
+`decorator(hello)` runs immediately and returns `wrapper` (not called, just
+returned), so the name `hello` gets rebound to `wrapper`. From then on,
+hello() actually calls wrapper(), which calls the original hello via `func`.
 
-Inside decorator:
-
-def decorator(func):
-    # func points to original hello
-
-    def wrapper(*args, **kwargs):
-        ...
-
-    return wrapper
-
-Notice:
-
-wrapper() is not called
-It is returned
-
-So after this line:
-
-hello = decorator(hello)
-
-hello is no longer the original function.
-
-It is now:
-
-hello = wrapper
-
-
-Original hello
-      │
-      ▼
-decorator(original hello)
-      │
-      ▼
-returns wrapper
-      │
-      ▼
-hello now points to wrapper
-
-
-# Visual memory
-
-## Without decorator:
-
-hello()
-   │
-   ▼
-Hello
-
-## With decorator:
-
-hello()
-   │
-   ▼
-wrapper()
-   │
-   ├── Before
-   ├── func()  ---> original hello()
-   └── After
-
+For the full step-by-step execution trace (with *args/**kwargs), see
+decorator_arguments_flow.md in this folder.
 """
+
 
 def decorator(func):
     print("Decorator called")
 
     def wrapper():
         print("Wrapper called")
-        func()
+        func()  # calls the original hello(), captured via closure
 
     return wrapper
+
 
 def hello():
     print("Hello")
 
-hello = decorator(hello)
+
+hello = decorator(hello)  # hello now points to wrapper, not the original function
 
 print("Done")
 
-hello()
+hello()  # Output: Wrapper called \n Hello

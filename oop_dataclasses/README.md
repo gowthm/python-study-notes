@@ -4,7 +4,7 @@ Introduced in Python 3.7 (PEP 557), the `dataclasses` module provides a decorato
 
 It is designed to eliminate boilerplate code when creating classes that primarily store data.
 
-> 📖 These auto-generated methods **are** dunder methods — see [`data_model.md`](file:///d:/python/python-study-notes/OOP%20-%20Classes/data_model.md) in `OOP - Classes` for what `__init__`, `__repr__`, and `__eq__` actually do under the hood. `@dataclass` just writes them for you.
+> 📖 These are dunder methods — for other special methods like `__str__`, `__len__`, and `__add__` that you still write by hand, see [`data_model.md`](file:///d:/python/python-study-notes/oop_classes/data_model.md) in `oop_classes`.
 
 ---
 
@@ -13,15 +13,15 @@ It is designed to eliminate boilerplate code when creating classes that primaril
 This directory contains resources illustrating advanced object-oriented design and dataclass features in Python:
 
 ### 1. Complete E-Commerce Example
-* **File**: [example.py](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/example.py)
+* **File**: [example.py](file:///d:/python/python-study-notes/oop_dataclasses/example.py)
 * **Description**: A practical script simulating products, customers, and orders using dataclasses, combined with abstract classes for payment processing.
 
 ### 2. Abstract Classes & Interfaces
-* **Guide**: [abstract_classes.md](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/abstract_classes.md)
+* **Guide**: [abstract_classes.md](file:///d:/python/python-study-notes/oop_dataclasses/abstract_classes.md)
 * **Description**: Explains Python's `abc` module, defining abstract base classes, and enforcing interface contracts with `@abstractmethod`.
 
 ### 3. TypeScript vs. Python Reference
-* **Guide**: [ts_vs_py.md](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/ts_vs_py.md)
+* **Guide**: [ts_vs_py.md](file:///d:/python/python-study-notes/oop_dataclasses/ts_vs_py.md)
 * **Description**: A side-by-side syntactic mapping of object-oriented concepts from TypeScript to Python.
 
 ---
@@ -67,10 +67,13 @@ class Product:
 ## ⚡ Key Features of Dataclasses
 
 ### 1. Auto-Generated Methods
-By default, `@dataclass` automatically adds the following methods to your class:
-* **`__init__()`**: Constructor that initializes the attributes in the order they are defined.
-* **`__repr__()`**: Returns a clean, human-readable string representation of the object (e.g., `Product(name='Laptop', price=999.9, quantity=1)`).
-* **`__eq__()`**: Allows comparing objects by comparing their values as a tuple of attributes.
+By default, `@dataclass` automatically adds the following dunder methods to your class:
+
+| Dunder method | Triggered by | What `@dataclass` generates |
+| :--- | :--- | :--- |
+| `__init__` | `MyClass(...)` | Constructor that initializes the attributes in the order they are defined. |
+| `__repr__` | `repr(obj)` / the REPL | A clean, human-readable string representation (e.g., `Product(name='Laptop', price=999.9, quantity=1)`). |
+| `__eq__` | `obj1 == obj2` | Compares objects by comparing their values as a tuple of attributes. |
 
 ```python
 p1 = Product("Laptop", 999.9)

@@ -6,7 +6,7 @@ A **Context Manager** is a Python object designed to manage resource allocation 
 
 ## 🤷 Why not just use `try...finally`?
 
-While `try...finally` blocks work, they require repeating resource management and cleanup logic in every location they are used. 
+While `try...finally` blocks work, they require repeating resource management and cleanup logic in every location they are used.
 
 Context managers:
 * 🛡️ **Encapsulation**: Put setup and cleanup logic in one place.

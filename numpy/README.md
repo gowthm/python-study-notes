@@ -201,5 +201,18 @@ When operating on two arrays, NumPy compares their shapes element-wise. It start
 - One of them is `1`.
 
 
-Casting with .astype() truncates toward zero — it does not round:
-np.array([1.7, -1.7]).astype(np.int32)   # [ 1 -1][text](c:/Users/ACER/Downloads/04_scipython__code.ipynb)
+> [!NOTE]
+> Casting with `.astype()` truncates toward zero — it does not round:
+> ```python
+> np.array([1.7, -1.7]).astype(np.int32)
+> # array([ 1, -1], dtype=int32)
+> ```
+
+---
+
+## 📂 Related Resources in This Folder
+
+* **Notebook**: [04_scipython__code.ipynb](file:///d:/python/python-study-notes/numpy/04_scipython__code.ipynb) — a full lecture notebook (Sebastian Raschka, STAT 451) covering NumPy, SciPy, and Matplotlib basics with runnable cells.
+* **Flowgraph**: [numpy_core_flowgraph.md](file:///d:/python/python-study-notes/numpy/numpy_core_flowgraph.md) / [numpy_core_flowgraph.html](file:///d:/python/python-study-notes/numpy/numpy_core_flowgraph.html) — a hierarchical outline of NumPy's public API surface.
+* **Study Plan**: [study_plan.md](file:///d:/python/python-study-notes/numpy/study_plan.md) — a checklist of topics to work through in order.
+* **Reference Links**: [reference_url.md](file:///d:/python/python-study-notes/numpy/reference_url.md)
