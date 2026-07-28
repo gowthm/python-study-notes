@@ -1,8 +1,10 @@
 # 📦 Python Dataclasses
 
-Introduced in Python 3.7 (PEP 557), the `dataclasses` module provides a decorator and functions to automatically generate special methods (like `__init__()`, `__repr__()`, and `__eq__()`) for custom classes. 
+Introduced in Python 3.7 (PEP 557), the `dataclasses` module provides a decorator and functions to automatically generate special methods (like `__init__()`, `__repr__()`, and `__eq__()`) for custom classes.
 
 It is designed to eliminate boilerplate code when creating classes that primarily store data.
+
+> 📖 These auto-generated methods **are** dunder methods — see [`data_model.md`](file:///d:/python/python-study-notes/OOP%20-%20Classes/data_model.md) in `OOP - Classes` for what `__init__`, `__repr__`, and `__eq__` actually do under the hood. `@dataclass` just writes them for you.
 
 ---
 

@@ -30,3 +30,5 @@ print(len(b))  # Output: 412                -> uses __len__
 ```
 
 > 🚧 More dunder methods and examples to be added here as they're covered.
+
+> 📖 **Related**: [`OOP - dataclasses`](file:///d:/python/python-study-notes/OOP%20-%20dataclasses/README.md) covers `@dataclass`, which auto-generates `__init__`, `__repr__`, and `__eq__` for you instead of writing them by hand as shown above.
