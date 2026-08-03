@@ -1,0 +1,70 @@
+🔄 ITERABLE → ITERATOR FLOW
+════════════════════════════
+
+    Iterable
+       │
+    iter()
+       │
+       ▼
+    Iterator
+       │
+    next()
+       ▼
+   Next value
+
+
+📌 EXAMPLE — Custom Iterator Class
+════════════════════════════════════
+
+    class Count:
+        def __init__(self):
+            self.num = 1
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.num > 6:
+                raise StopIteration
+            value = self.num
+            self.num += 1
+            return value
+
+
+    counter = Count()
+    for i in counter:
+        print(i)
+
+
+⚙️ WHAT PYTHON CALLS INTERNALLY
+══════════════════════════════════
+
+    counter.__iter__()
+
+    counter.__next__()
+    counter.__next__()
+    counter.__next__()
+    ...
+
+This is called the Iterator Protocol.
+
+
+🔁 THE ITERATOR PROTOCOL
+═══════════════════════════
+
+    Count Object
+         │
+         ▼
+    __iter__()
+         │
+         ▼
+   returns itself
+         │
+         ▼
+    __next__()
+         │
+         ▼
+     1, 2, 3, 4, 5, 6
+         │
+         ▼
+    StopIteration

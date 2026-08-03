@@ -1,0 +1,32 @@
+⚡ GENERATOR FUNCTION FLOW
+══════════════════════════
+
+    yield 1
+       │
+       ▼
+     Pause
+       │
+       ▼
+  next() called
+       │
+       ▼
+    Resume
+       │
+       ▼
+    yield 2
+       │
+       ▼
+     Pause
+       │
+       ▼
+  next() called
+       │
+       ▼
+    Resume
+       │
+       ▼
+    yield 3
+       │
+       ▼
+      Done
+  (StopIteration)
